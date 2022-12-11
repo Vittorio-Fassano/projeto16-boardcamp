@@ -15,21 +15,35 @@ export async function newGame(req, res) {
   }
 }
 
-
 //incomplete (incomplete, need to search by name with case insensitive)
 export async function allGames(req, res) {
-    // const { name } = req.query;
-  
-    //get all (without name)
-    try {
+  const { name } = req.query;
+
+  //get all (without name)
+  try {
+    if (name) {
+      const nameQuery = name.toLowerCase();
       const games = await connectionDB.query(
         `SELECT games.*, categories.name AS "categoryName"
          FROM games
          JOIN categories
-         ON games."categoryId" = categories.id;`
+         ON games."categoryId" = categories.id
+         WHERE (games.name LIKE $1 OR games.name LIKE $2)
+         ORDER BY id DESC;`,
+        [`${name}%`, `${nameQuery}%`]
       );
       res.send(games.rows);
-    } catch (err) {
-      return res.status(500).send(err.message);
+    } else {
+      const games = await connectionDB.query(
+        `SELECT games.*, categories.name AS "categoryName"
+         FROM games
+         JOIN categories
+         ON games."categoryId" = categories.id
+         ORDER BY id DESC;`
+      );
+      res.send(games.rows);
     }
+  } catch (err) {
+    return res.status(500).send(err.message);
   }
+}
