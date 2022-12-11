@@ -15,11 +15,9 @@ export async function newGame(req, res) {
   }
 }
 
-//incomplete (incomplete, need to search by name with case insensitive)
 export async function allGames(req, res) {
   const { name } = req.query;
 
-  //get all (without name)
   try {
     if (name) {
       const nameQuery = name.toLowerCase();
