@@ -11,6 +11,6 @@ app.use(express.json());
 
 app.use(categoriesRouter);
 app.use(gamesRouter);
-// app.use(customersRouter);
+app.use(customersRouter);
 
 export default app;
