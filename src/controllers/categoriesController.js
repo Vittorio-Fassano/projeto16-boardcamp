@@ -1,6 +1,6 @@
 import { connectionDB } from "../database/db.js";
 
-export default async function newCategory(req, res) {
+export async function newCategory(req, res) {
   const { name } = req.body;
   
   try {
@@ -13,3 +13,15 @@ export default async function newCategory(req, res) {
     return res.status(500).send(err.message);
   }
 }
+
+
+export async function allCategories(req, res) {
+    try {
+      const {rows} = await connectionDB.query(
+          "SELECT * FROM categories;", 
+      );
+      res.send(rows);
+    } catch (err) {
+      return res.status(500).send(err.message);
+    }  
+  }
