@@ -14,7 +14,6 @@ export async function newCategory(req, res) {
   }
 }
 
-
 export async function allCategories(req, res) {
     try {
       const {rows} = await connectionDB.query(

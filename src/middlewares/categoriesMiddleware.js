@@ -15,11 +15,11 @@ export default async function validatingCategories(req, res, next) {
       [name]
     );
     if (nameAlreadyExist.rows[0]) {
-      res.sendStatus(409);
-      return;
+      return res.sendStatus(409);
     }
-    next();
   } catch (err) {
     return res.sendStatus(500);
   }
+
+  next();
 }
