@@ -27,10 +27,30 @@ export async function allCustomers(req, res) {
       );
       res.send(customers.rows);
     } else {
-      const customers = await connectionDB.query(
-        `SELECT * FROM customers;`
-      );
+      const customers = await connectionDB.query(`SELECT * FROM customers;`);
       res.send(customers.rows);
+    }
+  } catch (err) {
+    return res.status(500).send(err.message);
+  }
+}
+
+export async function customerById(req, res) {
+  const { id } = req.params;
+
+  try {
+    const customer = await connectionDB.query(
+      `SELECT * FROM customers
+           WHERE id = $1 ;`,
+      [id]
+    );
+
+    if (id) {
+      return res.status(200).send(customer.rows);
+    }
+
+    if (!customer.rows[0]) {
+      return res.sendStatus(404);
     }
   } catch (err) {
     return res.status(500).send(err.message);
