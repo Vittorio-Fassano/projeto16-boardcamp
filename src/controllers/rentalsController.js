@@ -62,6 +62,7 @@ export async function finalizeRental(req, res) {
     const outdatedDays = diff / (1000 * 60 * 60 * 24);
     console.log(outdatedDays);
 
+    //how to test if the delayFee, consequently the outdatedDays, is working???
     const price = rental.rows[0].originalPrice;
     const delayFee = outdatedDays * price;
     console.log(delayFee);
@@ -102,6 +103,26 @@ export async function deleteRental(req, res) {
     //
 
     res.sendStatus(201);
+  } catch (err) {
+    return res.status(500).send(err.message);
+  }
+}
+
+export async function allRentals(req, res) {
+  const { customerId, gameId } = req.query;
+  try {
+    const rentals = await connectionDB.query(
+      `SELECT 
+      rentals.*, 
+      customers.id, customers.name, 
+      games.id, games.name, games."categoryId", 
+      categories.name AS "categoryName" 
+      FROM rentals 
+      JOIN customers ON customers.id = rentals."customerId" 
+      JOIN games ON games.id = rentals."gameId" 
+      JOIN categories ON categories.id = games."categoryId";`
+    );
+    res.send(rentals.rows);
   } catch (err) {
     return res.status(500).send(err.message);
   }
