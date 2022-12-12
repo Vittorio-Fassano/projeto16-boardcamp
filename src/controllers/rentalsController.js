@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 
 import { connectionDB } from "../database/db.js";
 
-export default async function newRental(req, res) {
+export async function newRental(req, res) {
   const { customerId, gameId, daysRented } = req.body;
 
   try {
@@ -12,7 +12,7 @@ export default async function newRental(req, res) {
        WHERE id = $1;`,
       [gameId]
     );
-    const originalPrice = daysRented * (game.rows[0].pricePerDay);
+    const originalPrice = daysRented * game.rows[0].pricePerDay;
 
     await connectionDB.query(
       `INSERT INTO rentals ("customerId", "gameId", "daysRented", "rentDate", "originalPrice")  
@@ -20,6 +20,21 @@ export default async function newRental(req, res) {
       [customerId, gameId, daysRented, rentDate, originalPrice]
     );
 
+    res.sendStatus(201);
+  } catch (err) {
+    return res.status(500).send(err.message);
+  }
+}
+
+export async function deleteRental(req, res) {
+  const { id } = req.params;
+  try {
+    await connectionDB.query(
+      `DELETE FROM rentals
+       WHERE id = $1;`,
+      [id]
+    );
+    
     res.sendStatus(201);
   } catch (err) {
     return res.status(500).send(err.message);
