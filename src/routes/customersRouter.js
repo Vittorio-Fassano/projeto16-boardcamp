@@ -9,5 +9,4 @@ customersRouter.get("/customers", allCustomers);
 customersRouter.get("/customers/:id", customerById);
 customersRouter.put("/customers/:id", validatingCustomers, updateCustomer);
 
-
 export default customersRouter;

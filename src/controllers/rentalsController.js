@@ -34,7 +34,7 @@ export async function deleteRental(req, res) {
        WHERE id = $1;`,
       [id]
     );
-    
+
     res.sendStatus(201);
   } catch (err) {
     return res.status(500).send(err.message);
