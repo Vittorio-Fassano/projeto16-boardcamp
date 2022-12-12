@@ -24,9 +24,9 @@ export async function validatingRentals(req, res, next) {
       `SELECT * FROM rentals WHERE id = $1`,
       [gameId]
     );
-    
+
     const gameFree = rentals.rows.filter(
-      rental => rental.returnDate === null
+      (rental) => rental.returnDate === null
     );
     console.log(gameFree);
 
@@ -34,7 +34,7 @@ export async function validatingRentals(req, res, next) {
       !rentalCustomerId.rows[0] ||
       !rentalGameId.rows[0] ||
       daysRented <= 0 ||
-      gameFree.length >= rentalGameId.rows[0].stockTotal 
+      gameFree.length >= rentalGameId.rows[0].stockTotal
     ) {
       return res.sendStatus(400);
     }
@@ -45,22 +45,22 @@ export async function validatingRentals(req, res, next) {
   }
 }
 
-export async function validatingFinalizeAndDeleteRental (req, res, next) {
-  const {id} = req.params;
+export async function validatingFinalizeAndDeleteRental(req, res, next) {
+  const { id } = req.params;
   try {
     const rentals = await connectionDB.query(
       `SELECT * FROM rentals
        WHERE id = $1;`,
-       [id]
+      [id]
     );
 
     /*the condition below is checking if the rent is already finished, that is, 
     if the returnDate is already filled*/
-    if(rentals.rows[0].returnDate !== null) {
+    if (rentals.rows[0].returnDate !== null) {
       return res.sendStatus(400);
     }
 
-    if(!rentals) {
+    if (!rentals) {
       return res.sendStatus(404);
     }
 

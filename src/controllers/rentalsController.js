@@ -66,15 +66,8 @@ export async function finalizeRental(req, res) {
     const delayFee = outdatedDays * price;
     console.log(delayFee);
 
-    //add an item in sotckTotal in games table
+    //add an item from sotckTotal in games table
     //
-
-    await connectionDB.query(
-      `UPDATE rentals
-       SET "returnDate" = $1, "delayFee" = $2
-       WHERE id = $3;`,
-      [returnDate, delayFee, id]
-    );
 
     // await connectionDB.query(
     //   `UPDATE games
@@ -82,6 +75,13 @@ export async function finalizeRental(req, res) {
     //    WHERE games.id = rentals.id ;`,
     //   [sotckTotal]
     // );
+
+    await connectionDB.query(
+      `UPDATE rentals
+       SET "returnDate" = $1, "delayFee" = $2
+       WHERE id = $3;`,
+      [returnDate, delayFee, id]
+    );
 
     res.sendStatus(200);
   } catch (err) {
@@ -98,7 +98,7 @@ export async function deleteRental(req, res) {
       [id]
     );
 
-    //remove an item in sotckTotal in games table
+    //remove an item from sotckTotal in games table
     //
 
     res.sendStatus(201);
