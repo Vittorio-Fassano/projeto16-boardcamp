@@ -23,7 +23,6 @@ export default async function validatingRentals(req, res, next) {
     if (!rentalCustomerId.rows[0] || !rentalGameId.rows[0] || daysRented <= 0) {
       return res.sendStatus(400);
     }
-
   } catch (err) {
     return res.sendStatus(500);
   }
