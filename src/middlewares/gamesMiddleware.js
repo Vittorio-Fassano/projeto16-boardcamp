@@ -25,9 +25,9 @@ export default async function validatingGames(req, res, next) {
     if (!categoryIdValidate.rows[0]) {
       return res.sendStatus(400);
     }
+
+    next();
   } catch (err) {
     return res.sendStatus(500);
   }
-
-  next();
 }

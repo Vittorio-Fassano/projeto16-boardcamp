@@ -17,9 +17,9 @@ export default async function validatingCategories(req, res, next) {
     if (nameAlreadyExist.rows[0]) {
       return res.sendStatus(409);
     }
+
+    next();
   } catch (err) {
     return res.sendStatus(500);
   }
-
-  next();
 }

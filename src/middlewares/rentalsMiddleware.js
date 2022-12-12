@@ -1,7 +1,7 @@
 import { connectionDB } from "../database/db.js";
 import { rentalsSchema } from "../models/rentalsSchema.js";
 
-export default async function validatingRentals(req, res, next) {
+export async function validatingRentals(req, res, next) {
   const { customerId, gameId, daysRented } = req.body;
   const { error } = rentalsSchema.validate(req.body, { abortEarly: false });
 
@@ -38,10 +38,34 @@ export default async function validatingRentals(req, res, next) {
     ) {
       return res.sendStatus(400);
     }
+
+    next();
   } catch (err) {
     return res.sendStatus(500);
   }
-
-  next();
 }
 
+export async function validatingFinalizeAndDeleteRental (req, res, next) {
+  const {id} = req.params;
+  try {
+    const rentals = await connectionDB.query(
+      `SELECT * FROM rentals
+       WHERE id = $1;`,
+       [id]
+    );
+
+    /*the condition below is checking if the rent is already finished, that is, 
+    if the returnDate is already filled*/
+    if(rentals.rows[0].returnDate !== null) {
+      return res.sendStatus(400);
+    }
+
+    if(!rentals) {
+      return res.sendStatus(404);
+    }
+
+    next();
+  } catch (err) {
+    return res.sendStatus(500);
+  }
+}
