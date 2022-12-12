@@ -24,20 +24,17 @@ export default async function validatingRentals(req, res, next) {
       `SELECT * FROM rentals WHERE id = $1`,
       [gameId]
     );
-
+    
     const gameFree = rentals.rows.filter(
       rental => rental.returnDate === null
     );
-    
-    //
     console.log(gameFree);
-    //
 
     if (
       !rentalCustomerId.rows[0] ||
       !rentalGameId.rows[0] ||
       daysRented <= 0 ||
-      gameFree.length >= rentalGameId.rows[0].stockTotal
+      gameFree.length >= rentalGameId.rows[0].stockTotal 
     ) {
       return res.sendStatus(400);
     }
@@ -47,3 +44,4 @@ export default async function validatingRentals(req, res, next) {
 
   next();
 }
+
