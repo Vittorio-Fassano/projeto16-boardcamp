@@ -84,7 +84,7 @@ export async function finalizeRental(req, res) {
       [returnDate, delayFee, id]
     );
 
-    res.sendStatus(200);
+    res.sendStatus(201);
   } catch (err) {
     return res.status(500).send(err.message);
   }
@@ -109,20 +109,40 @@ export async function deleteRental(req, res) {
 }
 
 export async function allRentals(req, res) {
-  const { customerId, gameId } = req.query;
+  const { gameId, customerId } = req.query;
   try {
-    const rentals = await connectionDB.query(
-      `SELECT 
-      rentals.*, 
-      customers.id, customers.name, 
-      games.id, games.name, games."categoryId", 
-      categories.name AS "categoryName" 
-      FROM rentals 
-      JOIN customers ON customers.id = rentals."customerId" 
-      JOIN games ON games.id = rentals."gameId" 
-      JOIN categories ON categories.id = games."categoryId";`
-    );
-    res.send(rentals.rows);
+    if (gameId || customerId) {
+      const queryGameId = await connectionDB.query(
+        `SELECT * FROM rentals 
+        WHERE "gameId" = $1;`,
+        [gameId]
+      );
+      const queryCustomerId = await connectionDB.query(
+        `SELECT * FROM rentals 
+        WHERE "customerId" = $1;`,
+        [customerId]
+      );
+
+      if (queryGameId.rows.length !== 0) {
+        res.status(200).send(queryGameId.rows);
+      }
+      if (queryCustomerId.rows.length !== 0) {
+        res.status(200).send(queryCustomerId.rows);
+      }
+    } else {
+      const rentals = await connectionDB.query(
+        `SELECT 
+        rentals.*, 
+        customers.id, customers.name, 
+        games.id, games.name, games."categoryId", 
+        categories.name AS "categoryName" 
+        FROM rentals 
+        JOIN customers ON customers.id = rentals."customerId" 
+        JOIN games ON games.id = rentals."gameId" 
+        JOIN categories ON categories.id = games."categoryId";`
+      );
+      res.send(rentals.rows);
+    }
   } catch (err) {
     return res.status(500).send(err.message);
   }
