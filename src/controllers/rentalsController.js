@@ -130,12 +130,13 @@ export async function allRentals(req, res) {
         res.status(200).send(queryCustomerId.rows);
       }
     } else {
+      /*it is not sending the name and id of the client yet, 
+      but in the psql terminal the query is sending this data*/
       const rentals = await connectionDB.query(
         `SELECT 
         rentals.*, 
         customers.id, customers.name, 
-        games.id, games.name, games."categoryId", 
-        categories.name AS "categoryName" 
+        games.id, games.name, games."categoryId", categories.name AS "categoryName" 
         FROM rentals 
         JOIN customers ON customers.id = rentals."customerId" 
         JOIN games ON games.id = rentals."gameId" 
