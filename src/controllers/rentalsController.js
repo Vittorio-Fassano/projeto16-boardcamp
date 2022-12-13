@@ -74,7 +74,7 @@ export async function finalizeRental(req, res) {
     //   `UPDATE games
     //    SET "stockTotal" = $1
     //    WHERE games.id = rentals.id ;`,
-    //   [sotckTotal]
+    //   [stockTotal]
     // );
 
     await connectionDB.query(
@@ -130,19 +130,39 @@ export async function allRentals(req, res) {
         res.status(200).send(queryCustomerId.rows);
       }
     } else {
-      /*it is not sending the name and id of the client yet, 
-      but in the psql terminal the query is sending this data*/
       const rentals = await connectionDB.query(
-        `SELECT 
-        rentals.*, 
-        customers.id, customers.name, 
-        games.id, games.name, games."categoryId", categories.name AS "categoryName" 
+        `SELECT rentals.*, 
+        customers.id AS "customerId", customers.name AS "customerName", 
+        games.id AS "gameId", games.name AS "gameName", games."categoryId", 
+        categories.name AS "categoryName" 
         FROM rentals 
         JOIN customers ON customers.id = rentals."customerId" 
         JOIN games ON games.id = rentals."gameId" 
         JOIN categories ON categories.id = games."categoryId";`
       );
-      res.send(rentals.rows);
+      let resultRentals = rentals.rows;
+      const resultList = [];
+      resultRentals.forEach((rental) => {
+        rental = {
+          ...rental,
+          customer: {
+            id: rental.customerId,
+            name: rental.customerName,
+          },
+          game: {
+            id: rental.gameId,
+            name: rental.gameName,
+            categoryId: rental.categoryId,
+            categoryName: rental.categoryName,
+          },
+        };
+        delete rental.customerName;
+        delete rental.gameName;
+        delete rental.categoryId;
+        delete rental.categoryName;
+        resultList.push(rental);
+      });
+      res.send(resultList);
     }
   } catch (err) {
     return res.status(500).send(err.message);
