@@ -17,15 +17,6 @@ export async function newRental(req, res) {
     let delayFee = null;
     console.log(returnDate, delayFee);
 
-    //remove an item from stockTotal in games table
-    const games = await connectionDB.query(
-      `SELECT * FROM games WHERE id = $1`,
-      [gameId]
-    );
-    const removeOneFromStock = games.rows[0].stockTotal - 1;
-    console.log(removeOneFromStock);
-    //use forEach?
-
     await connectionDB.query(
       `INSERT INTO rentals 
        ("customerId", "gameId", "daysRented", "rentDate", "originalPrice", "returnDate", "delayFee")  
@@ -62,20 +53,9 @@ export async function finalizeRental(req, res) {
     const outdatedDays = diff / (1000 * 60 * 60 * 24);
     console.log(outdatedDays);
 
-    //how to test if the delayFee, consequently the outdatedDays, is working???
     const price = rental.rows[0].originalPrice;
     const delayFee = outdatedDays * price;
     console.log(delayFee);
-
-    //add an item from sotckTotal in games table
-    //
-
-    // await connectionDB.query(
-    //   `UPDATE games
-    //    SET "stockTotal" = $1
-    //    WHERE games.id = rentals.id ;`,
-    //   [stockTotal]
-    // );
 
     await connectionDB.query(
       `UPDATE rentals
@@ -98,9 +78,6 @@ export async function deleteRental(req, res) {
        WHERE id = $1;`,
       [id]
     );
-
-    //remove an item from sotckTotal in games table
-    //
 
     res.sendStatus(201);
   } catch (err) {

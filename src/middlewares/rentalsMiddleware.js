@@ -54,8 +54,6 @@ export async function validatingFinalizeAndDeleteRental(req, res, next) {
       [id]
     );
 
-    /*the condition below is checking if the rent is already finished, that is, 
-    if the returnDate is already filled*/
     if (rentals.rows[0].returnDate !== null) {
       return res.sendStatus(400);
     }
